@@ -16,8 +16,8 @@ jobs:
           chmod 400 Cloudchasers-7key.pem
           ls -lrsth
       - name: cp app.py
-        run: scp -o StrictHostKeyChecking=no -i Cloudchasers-7key.pem app.py ec2-user@15.206.209.151:/home/ec2-user/
+        run: scp -o StrictHostKeyChecking=no -i Cloudchasers-7key.pem app.py ec2-user@13.201.190.104:/home/ec2-user/
       - name: cp req.txt
-        run: scp -o StrictHostKeyChecking=no -i Cloudchasers-7key.pem requirements.txt ec2-user@15.206.209.151:/home/ec2-user/ 
+        run: scp -o StrictHostKeyChecking=no -i Cloudchasers-7key.pem requirements.txt ec2-user@13.201.190.104:/home/ec2-user/ 
       - name: run app
-        run: ssh -o StrictHostKeyChecking=no -i Cloudchasers-7key.pem ec2-user@15.206.209.151 "cd /home/ec2-user && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && python3 app.py"
+        run: ssh -o StrictHostKeyChecking=no -i Cloudchasers-7key.pem ec2-user@13.201.190.104 "cd /home/ec2-user && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && python3 app.py"
