@@ -16,8 +16,8 @@ jobs:
           chmod 400 ranjanidp_key.pem
           ls -lrsth
       - name: cp app.py
-        run: scp -o StrictHostKeyChecking=no -i ranjanidp_key.pem app.py ec2-user@13.233.166.91:/home/ec2-user/
+        run: scp -o StrictHostKeyChecking=no -i ranjanidp_key.pem app.py ec2-user@13.233.168.105:/home/ec2-user/
       - name: cp req.txt
-        run: scp -o StrictHostKeyChecking=no -i ranjanidp_key.pem requirements.txt ec2-user@13.233.166.91:/home/ec2-user/ 
+        run: scp -o StrictHostKeyChecking=no -i ranjanidp_key.pem requirements.txt ec2-user@13.233.168.105:/home/ec2-user/ 
       - name: run app
-        run: ssh -o StrictHostKeyChecking=no -i ranjanidp_key.pem ec2-user@13.233.166.91 "cd /home/ec2-user && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && python3 app.py"
+        run: ssh -o StrictHostKeyChecking=no -i ranjanidp_key.pem ec2-user@13.233.168.1051 "cd /home/ec2-user && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && python3 app.py"
