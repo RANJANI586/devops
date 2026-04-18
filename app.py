@@ -1,12 +1,9 @@
 from flask import Flask
-
+from datetime import date
+from collections import defaultdict
 app=Flask(__name__)
 
 @app.route("/")
-def home():
-    from datetime import date
-from collections import defaultdict
-
 class Expense:
     def __init__(self, description, amount, payer_id, participant_ids):
         self.description = description
