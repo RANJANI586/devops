@@ -1,93 +1,78 @@
-from flask import Flask
-import random
+from flask import Flask, request, jsonify
+from datetime import datetime
+import uuid
 
 app = Flask(__name__)
 
-# ----------- Classes -----------
+# In-memory database
+bills_db = []
 
-class User:
-    def __init__(self, name, user_id, phone, pickup, destination, distance):
-        self.name = name
-        self.user_id = user_id
-        self.phone_number = phone
-        self.pickup_loc = pickup
-        self.destination_loc = destination
-        self.distance = distance
+# 🔌 Bill Calculation Logic (Realistic Slabs)
+def calculate_bill(units):
+    if units <= 100:
+        amount = units * 1.5
+    elif units <= 200:
+        amount = (100 * 1.5) + (units - 100) * 2.5
+    elif units <= 300:
+        amount = (100 * 1.5) + (100 * 2.5) + (units - 200) * 4
+    else:
+        amount = (100 * 1.5) + (100 * 2.5) + (100 * 4) + (units - 300) * 6
 
+    tax = amount * 0.05  # 5% tax
+    total = amount + tax
 
-class Driver:
-    def __init__(self, name, driver_id, phone):
-        self.driver_name = name
-        self.driver_id = driver_id
-        self.phone_number = phone
+    return round(total, 2)
 
+# 🟢 Generate Bill
+@app.route('/generate-bill', methods=['POST'])
+def generate_bill():
+    data = request.json
 
-class Booking:
-    def __init__(self, booking_id, vehicle_id, user, driver):
-        self.booking_id = booking_id
-        self.vehicle_id = vehicle_id
-        self.user = user
-        self.driver = driver
+    name = data.get("name")
+    units = data.get("units")
 
+    if not name or units is None:
+        return jsonify({"error": "Name and units required"}), 400
 
-class Payment:
-    def __init__(self, booking_id, method, amount, payment_id):
-        self.booking_id = booking_id
-        self.method = method
-        self.amount = amount
-        self.payment_id = payment_id
+    total_amount = calculate_bill(units)
 
+    bill = {
+        "bill_id": str(uuid.uuid4()),
+        "customer_name": name,
+        "units_consumed": units,
+        "total_amount": total_amount,
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
 
-# ----------- Route -----------
+    bills_db.append(bill)
 
-@app.route("/")
-def home():
+    return jsonify({
+        "message": "Bill generated successfully",
+        "bill": bill
+    })
 
-    # Predefined data
-    users = [
-        User("Ranjani", 101, 9876543210, "Chennai", "Trichy", 300),
-        User("Vignesh", 102, 9123456780, "Madurai", "Salem", 200)
-    ]
+# 🟢 Get all bills
+@app.route('/bills', methods=['GET'])
+def get_bills():
+    return jsonify(bills_db)
 
-    drivers = [
-        Driver("Shanthini", 1, 1111111111),
-        Driver("Sameer", 2, 2222222222),
-        Driver("Sanu", 3, 3333333333)
-    ]
+# 🟢 Get bill by ID
+@app.route('/bill/<bill_id>', methods=['GET'])
+def get_bill(bill_id):
+    for bill in bills_db:
+        if bill["bill_id"] == bill_id:
+            return jsonify(bill)
 
-    payment_method = "UPI"
+    return jsonify({"error": "Bill not found"}), 404
 
-    # Booking logic
-    selected_user = users[0]
-    assigned_driver = random.choice(drivers)
+# 🟢 Delete bill
+@app.route('/bill/<bill_id>', methods=['DELETE'])
+def delete_bill(bill_id):
+    global bills_db
+    bills_db = [b for b in bills_db if b["bill_id"] != bill_id]
 
-    booking_id = random.randint(100, 999)
-    vehicle_id = "TN" + str(booking_id)
+    return jsonify({"message": "Bill deleted successfully"})
 
-    booking = Booking(booking_id, vehicle_id, selected_user, assigned_driver)
-
-    cost_per_km = 10
-    amount = selected_user.distance * cost_per_km
-
-    payment = Payment(booking_id, payment_method, amount, random.randint(1000, 9999))
-
-    # Return HTML (NOT print)
-    return f"""
-    <h2>🚕 Booking Confirmed</h2>
-    <p><b>Booking ID:</b> {booking.booking_id}</p>
-    <p><b>Vehicle ID:</b> {booking.vehicle_id}</p>
-    <p><b>User:</b> {booking.user.name}</p>
-    <p><b>Driver:</b> {booking.driver.driver_name}</p>
-    <p><b>Driver Phone:</b> {booking.driver.phone_number}</p>
-    <p><b>From:</b> {booking.user.pickup_loc}</p>
-    <p><b>To:</b> {booking.user.destination_loc}</p>
-    <p><b>Distance:</b> {booking.user.distance} km</p>
-    <p><b>Amount:</b> ₹{payment.amount}</p>
-    <p><b>Payment:</b> {payment.method}</p>
-    """
-
-
-# ----------- Run Server -----------
-
+# 🟢 Run app
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=4000)
+    app.run(host="0.0.0.0", port=5001, debug=True)
