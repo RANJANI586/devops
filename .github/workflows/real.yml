@@ -1,4 +1,4 @@
-name: cloudchasers-pipeline
+name: Devops-pipeline
 on: workflow_dispatch
 
 jobs:
