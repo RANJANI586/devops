@@ -12,7 +12,7 @@ jobs:
 
       - name: get pem file
         run: |
-          echo "${{secrets.Ranjani.sg}}" > Ranjani.pem
+          echo "${{secrets.Ranjani___}}" > Ranjani.pem
           chmod 400 Ranjani.pem
           ls -lrsth
       - name: cp app.py
