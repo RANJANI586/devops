@@ -1,4 +1,4 @@
-name: Devops-pipeline
+name: Cloud-pipeline
 on: workflow_dispatch
 
 jobs:
