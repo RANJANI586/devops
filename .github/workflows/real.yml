@@ -12,12 +12,12 @@ jobs:
 
       - name: get pem file
         run: |
-          echo "${{secrets.ranjaniramesh}}" > Ranjani.pem
-          chmod 400 Ranjani.pem
+          echo "${{secrets.rranjani}}" > rranjani.pem
+          chmod 400 rranjani.pem
           ls -lrsth
       - name: cp app.py
-        run: scp -o StrictHostKeyChecking=no -i Ranjani.pem app.py ec2-user@3.25.252.136:/home/ec2-user/
+        run: scp -o StrictHostKeyChecking=no -i rranjani.pem app.py ec2-user@100.53.132.217:/home/ec2-user/
       - name: cp req.txt
-        run: scp -o StrictHostKeyChecking=no -i Ranjani.pem requirements.txt ec2-user@3.25.252.136:/home/ec2-user/ 
+        run: scp -o StrictHostKeyChecking=no -i rranjani.pem requirements.txt ec2-user@100.53.132.217:/home/ec2-user/ 
       - name: run app
-        run: ssh -o StrictHostKeyChecking=no -i Ranjani.pem ec2-user@3.25.252.136 "cd /home/ec2-user && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && nohup python3 app.py > output.log 2>&1 & "
+        run: ssh -o StrictHostKeyChecking=no -i rranjani.pem ec2-user@100.53.132.217 "cd /home/ec2-user && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && nohup python3 app.py > output.log 2>&1 & "
